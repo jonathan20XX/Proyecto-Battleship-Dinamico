@@ -133,6 +133,17 @@ public class Tablero {
         regenerarTablero(i+1);
     }
     
+    public String mostrarTablero(){
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<matriz.length; i++) {
+            for (int j=0; j<matriz[i].length; j++) {
+                sb.append(matriz[i][j]).append(" ");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+    
     private void agregarBarco(Barcos bote){
         for(int i=0; i<barco.length; i++){
             if(barco[i] == null || barco[i] == bote){

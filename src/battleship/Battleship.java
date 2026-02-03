@@ -4,13 +4,18 @@
  */
 package battleship;
 
+import javax.swing.SwingUtilities;
+
 public class Battleship {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+         SwingUtilities.invokeLater(() -> {
+            PantallaJuego game = new PantallaJuego();
+            game.setVisible(true);
+        });
     }
     
 }
