@@ -14,25 +14,32 @@ import java.awt.event.*;
  */
 public class PantallaJuego extends JFrame{
     
-    private JPanel menuPrincipal, pantallaLogin, pantallaTablero;
-    Tablero tablero;
-    private JTextArea areaTablero;
+    private JPanel menuPrincipal, pantallaLoginJ1, pantallaLoginJ2, pantallaTablero;
+    private JTextField userJ1Field, userJ2Field;
+
+    private JButton[][] botonesJ1;
+    private JButton[][] botonesJ2;
+
+    private Player jugador1;
+    private Player jugador2;
+
+    private LogicaDeJuego ejecucion;
     
     public PantallaJuego(){
         setTitle("BATTLESHIP DINAMICO");
-        setSize(600, 500);
+        setSize(900, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new CardLayout());
         
-        tablero = new Tablero(8);
-        
         menuPrincipal();
-        pantallaLogin();
+        pantallaLoginJ1();
+        pantallaLoginJ2();
         pantallaTablero();
         
         add(menuPrincipal, "MENU PRINCIPAL");
-        add(pantallaLogin, "LOGIN");
+        add(pantallaLoginJ1, "LOGIN JUGADOR 1");
+        add(pantallaLoginJ2, "LOGIN JUGADOR 2");
         add(pantallaTablero, "TABLERO DE JUEGO");
 
         showPanel("MENU PRINCIPAL");
@@ -47,93 +54,151 @@ public class PantallaJuego extends JFrame{
         menuPrincipal = new JPanel();
         menuPrincipal.setLayout(new GridBagLayout());
         
-        JButton btnLogin = new JButton("LOGIN");
         JButton btnJugar = new JButton("JUGAR");
+        JButton btnLogin = new JButton("LOGIN");
         JButton btnSalir = new JButton("SALIR");
         
-        menuPrincipal.add(btnLogin);
+        btnJugar.addActionListener(e -> showPanel("LOGIN JUGADOR 1"));
+        btnSalir.addActionListener(e -> System.exit(0));
+        
         menuPrincipal.add(btnJugar);
+        menuPrincipal.add(btnLogin);
         menuPrincipal.add(btnSalir);
         
-        btnLogin.addActionListener(e->showPanel("LOGIN"));
-         btnJugar.addActionListener(e -> {
-            areaTablero.setText(tablero.mostrarTablero());
-            showPanel("TABLERO DE JUEGO");
+        btnLogin.addActionListener(e -> showPanel("LOGIN JUGADOR 1"));
+
+        btnJugar.addActionListener(e -> {
+            if (jugador1 == null) {
+                JOptionPane.showMessageDialog(this, "Primero inicia sesion con Jugador 1");
+                return;
+            }
+            showPanel("LOGIN JUGADOR 2");
         });
+
         btnSalir.addActionListener(e -> System.exit(0));
     }
     
-    private void pantallaLogin(){
-        pantallaLogin = new JPanel();
-        pantallaLogin.setLayout(new GridLayout(3, 2, 10, 10));
-        
-        pantallaLogin.add(new JLabel("Usuario:"));
-        JTextField userField = new JTextField();
-        pantallaLogin.add(userField);
-        
-        pantallaLogin.add(new JLabel("Password:"));
-        JPasswordField passField = new JPasswordField();
-        pantallaLogin.add(passField);
-        
-        JButton btnAtras = new JButton("Volver");
-        btnAtras.addActionListener(e -> showPanel("MENU PRINCIPAL"));
-        pantallaLogin.add(btnAtras);
-        
-        JButton btnLogin = new JButton("Login");
-        btnLogin.addActionListener(e -> JOptionPane.showMessageDialog(this, "Inicio de sesion exitoso!"));
-        pantallaLogin.add(btnLogin);
+    private void pantallaLoginJ1(){
+        pantallaLoginJ1 = new JPanel(new GridLayout(3, 2, 10, 10));
+
+        pantallaLoginJ1.add(new JLabel("Usuario Jugador 1:"));
+        userJ1Field = new JTextField();
+        pantallaLoginJ1.add(userJ1Field);
+
+        JButton btnContinuar = new JButton("Continuar");
+        btnContinuar.addActionListener(e -> {
+            jugador1 = new Player(userJ1Field.getText());
+            JOptionPane.showMessageDialog(this, "Jugador 1 logeado: " + jugador1.getUsuario());
+            showPanel("LOGIN JUGADOR 2");
+        });
+
+        pantallaLoginJ1.add(new JLabel());
+        pantallaLoginJ1.add(btnContinuar);
     }
     
-    private void pantallaTablero(){
-        pantallaTablero = new JPanel();
-        pantallaTablero.setLayout(new BorderLayout());
-        
-        areaTablero = new JTextArea();
-        areaTablero.setFont(new Font("Monospaced", Font.PLAIN, 20));
-        areaTablero.setEditable(false);
-        areaTablero.setText(tablero.mostrarTablero());
-        pantallaTablero.add(new JScrollPane(areaTablero), BorderLayout.CENTER);
-        
-        JPanel panelEntrada = new JPanel();
-        panelEntrada.add(new JLabel("Fila:"));
-        JTextField entradaFila = new JTextField(2);
-        panelEntrada.add(entradaFila);
-        
-        panelEntrada.add(new JLabel ("Columna:"));
-        JTextField entradaColumna = new JTextField(2);
-        panelEntrada.add(entradaColumna);
-        
-        JButton btnFuego = new JButton("DISPARAR");
-        
-        btnFuego.addActionListener(e -> {
-            try {
-                int fila = Integer.parseInt(entradaFila.getText());
-                int columna = Integer.parseInt(entradaColumna.getText());
+    private void pantallaLoginJ2(){
+        pantallaLoginJ2 = new JPanel(new GridLayout(3, 2, 10, 10));
 
-                if (fila < 0 || fila >= 8 || columna < 0 || columna >= 8) {
-                    JOptionPane.showMessageDialog(this, "Coordenadas fuera del tablero!");
-                    return;
-                }
+        pantallaLoginJ2.add(new JLabel("Jugador 2:"));
+        userJ2Field = new JTextField();
+        pantallaLoginJ2.add(userJ2Field);
 
-                String resultado = tablero.disparo(fila, columna);
-                JOptionPane.showMessageDialog(this, resultado);
+        JButton btnIniciar = new JButton("Iniciar partida");
+        btnIniciar.addActionListener(e -> {
+            jugador2 = new Player(userJ2Field.getText());
 
-                areaTablero.setText(tablero.mostrarTablero()); 
+            ejecucion = new LogicaDeJuego(jugador1, jugador2, 8);
 
-                if (tablero.todosHundidos()) {
-                    JOptionPane.showMessageDialog(this, "Felicidades! Has hundido todos los barcos.");
-                }
-
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Introduce numeros válidos!");
-            }
+            actualizarTableros();
+            showPanel("TABLERO DE JUEGO");
         });
-        panelEntrada.add(btnFuego);
-        
-        JButton btnAtras = new JButton("Volver al menu");
-        btnAtras.addActionListener(e -> showPanel("MENU PRINCIPAL"));
-        panelEntrada.add(btnAtras);
-        
-        pantallaTablero.add(panelEntrada, BorderLayout.SOUTH);
+
+        pantallaLoginJ2.add(new JLabel());
+        pantallaLoginJ2.add(btnIniciar);
     }
+    
+   private void pantallaTablero(){
+        pantallaTablero = new JPanel(new BorderLayout());
+
+        JPanel panelTableros = new JPanel(new GridLayout(1, 2, 20, 0));
+
+        botonesJ1 = crearTablero(true);
+        botonesJ2 = crearTablero(false);
+
+        panelTableros.add(crearPanelJugador("Jugador 1", botonesJ1));
+        panelTableros.add(crearPanelJugador("Jugador 2", botonesJ2));
+
+        pantallaTablero.add(panelTableros, BorderLayout.CENTER);
+
+        JButton btnSalir = new JButton("Salir");
+        btnSalir.addActionListener(e -> showPanel("MENU PRINCIPAL"));
+        pantallaTablero.add(btnSalir, BorderLayout.SOUTH);
+    }
+    
+   
+   
+     private JButton[][] crearTablero(boolean tableroJ1) {
+        JButton[][] botones = new JButton[8][8];
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                JButton btn = new JButton("~");
+                btn.setFont(new Font("Monospaced", Font.BOLD, 16));
+
+                int fila = i;
+                int col = j;
+
+                btn.addActionListener(e -> manejarClick(fila, col));
+
+                botones[i][j] = btn;
+            }
+        }
+        return botones;
+    }
+     
+    private JPanel crearPanelJugador(String nombre, JButton[][] botones) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel(nombre, SwingConstants.CENTER), BorderLayout.NORTH);
+
+        JPanel grid = new JPanel(new GridLayout(8, 8));
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                grid.add(botones[i][j]);
+            }
+        }
+
+        panel.add(grid, BorderLayout.CENTER);
+        return panel;
+    } 
+     
+    private void manejarClick(int fila, int columna) {
+        if(ejecucion == null) return;
+        
+        String mensaje = ejecucion.turnoDeDisparo(fila, columna);
+        JOptionPane.showMessageDialog(this, mensaje);
+        
+        actualizarTableros();
+
+        if (ejecucion.hayGanador()) {
+            Player ganador = ejecucion.mostrarGanador();
+            JOptionPane.showMessageDialog(this,
+                    "GANADOR: " + ganador.getUsuario());
+        }
+    }
+     
+     private void actualizarTableros() {
+        actualizarVista(botonesJ1, ejecucion.getTableroJ1());
+        actualizarVista(botonesJ2, ejecucion.getTableroJ2());
+    }
+     
+     private void actualizarVista(JButton[][] botones, Tablero tablero) {
+        for (int i=0; i<8; i++) {
+            for (int j=0; j<8; j++) {
+                char c=tablero.matriz[i][j];
+                if (c=='X' || c=='F') {
+                    botones[i][j].setText(String.valueOf(c));
+                }
+            }
+        }
+    } 
 }

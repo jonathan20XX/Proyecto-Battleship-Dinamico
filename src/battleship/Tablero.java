@@ -12,13 +12,14 @@ public class Tablero {
     protected char[][] matriz;
     protected Barcos[] barco;
     protected int cantidadBarcos;
-    protected Random posicionAleatoria= new Random();
 
-    public Tablero(int cantidadBarcos) {
+    public Tablero(int cantidadBarcos, Random rand) {
+        this.randomize=rand;
         this.cantidadBarcos = cantidadBarcos;
         matriz = new char[8][8];
         barco = new Barcos[cantidadBarcos];
         iniciar();
+        colocarBarcosIniciales();
     }
     
     private void iniciar(){
@@ -56,6 +57,13 @@ public class Tablero {
         }
     }
     
+    private void colocarBarcosIniciales() {
+    for (int i = 0; i < cantidadBarcos; i++) {
+        Barcos b = new Barcos("B" + i, 2);
+        colocarBarcoAleatorio(b);
+    }
+}
+    
     public boolean puedeColocar(int size, int fila, int columna, boolean horizontal){
         for(int i=0; i<size; i++){
             int posicionFila = fila+(horizontal ? 0:i);
@@ -89,10 +97,9 @@ public class Tablero {
         String mensaje = "IMPACTO";
         
        if (b != null && b.recibioImpacto()) {
-       mensaje = "SE HUNDIO EL " + b.getCodigo();
+           mensaje = "SE HUNDIO EL " + b.getCodigo();
         }
        
-       iniciarRegeneracion();
        return mensaje;
     }   
     
@@ -104,33 +111,6 @@ public class Tablero {
             }
         }
         return null;
-    }
-    
-    private void limpiarTablero(){
-        for(int i=0; i<8; i++){
-            for(int j=0; j<8; j++){
-                matriz[i][j]='~';
-            }
-        }
-    }
-    
-    public void iniciarRegeneracion(){
-        limpiarTablero();
-        regenerarTablero(0);
-    }
-    
-    private void regenerarTablero(int i){
-        if(i>=barco.length){
-            return;
-        }
-        
-        Barcos b = barco[i];
-        
-        if(b !=null && !b.estaHundido()){
-            colocarBarcoAleatorio(b);
-        }
-        
-        regenerarTablero(i+1);
     }
     
     public String mostrarTablero(){
@@ -153,12 +133,18 @@ public class Tablero {
         }
     }
     
-    public boolean todosHundidos(){
-        for(Barcos b : barco){
-            if(b != null && !b.estaHundido()){
-                return false;
+    public boolean todosHundidos() {
+        boolean hayBarcos = false;
+
+        for (Barcos b : barco) {
+            if (b != null) {
+                hayBarcos = true;
+                if (!b.estaHundido()) {
+                    return false;
+                }
             }
         }
-        return true;
+
+        return hayBarcos;
     }
 }

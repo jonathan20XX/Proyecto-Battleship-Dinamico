@@ -4,6 +4,7 @@
  */
 package battleship;
 
+import java.util.Random;
 /**
  *
  * @author jc1st
@@ -16,16 +17,32 @@ public class LogicaDeJuego {
     
     private boolean turnoJ1 = true;
     
+    public LogicaDeJuego(Player jugador1, Player jugador2, int cantidadBarcos){
+    this.jugador1 = jugador1;
+    this.jugador2 = jugador2;
+
+    this.tableroJ1 = new Tablero(cantidadBarcos, new Random(System.currentTimeMillis()));
+    this.tableroJ2 = new Tablero(cantidadBarcos, new Random(System.currentTimeMillis() + 1000));
+}
+
+    public Tablero getTableroJ1() {
+        return tableroJ1;
+    }
+
+    public Tablero getTableroJ2() {
+        return tableroJ2;
+    }
+    
     public String turnoDeDisparo(int fila, int columna){
-        if(turnoJ1){
-            String resultado = tableroJ2.disparo(fila, columna);
-            turnoJ1=false;
-            
+        String resultado;
+
+        if (turnoJ1) {
+            resultado = tableroJ2.disparo(fila, columna);
+            turnoJ1 = false;
             return interpretarDisparo(resultado, jugador1, jugador2);
         } else {
-            String resultado = tableroJ1.disparo(fila, columna);
+            resultado = tableroJ1.disparo(fila, columna);
             turnoJ1 = true;
-            
             return interpretarDisparo(resultado, jugador2, jugador1);
         }
     }
@@ -55,15 +72,6 @@ public class LogicaDeJuego {
         if(tableroJ2.todosHundidos()){
             return jugador1;
         }
-        
         return null;
-    }
-    
-    public void finalizarPartida(){
-        Player ganador = mostrarGanador();
-        
-        if(ganador != null){
-            ganador.sumarPuntos(3);
-        }
     }
 }

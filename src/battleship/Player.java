@@ -21,6 +21,13 @@ public class Player {
         this.puntos=0;
         this.logs=new String[10];
     }
+    
+    public Player(String usuario){
+        this.usuario = usuario;
+        this.password = "";
+        this.puntos = 0;
+        this.logs = new String[10];
+    }
 
     public String getUsuario() {
         return usuario;
