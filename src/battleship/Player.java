@@ -29,18 +29,29 @@ public class Player {
         this.logs = new String[10];
     }
 
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
     public String getUsuario() {
         return usuario;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public int getPuntos() {
         return puntos;
     }
     
-    public void sumarPuntos(int p){
-        puntos += p;
+    public void sumarPuntos(){
+        puntos += 3;
     }
-    
     
     public boolean validarPassword(String pass){
         return password.equals(pass);
@@ -57,4 +68,15 @@ public class Player {
         System.out.println((i+1)+"- "+logs[i]);
         mostrarLogs(i+1);
     }
+    
+    public String obtenerLogs() {
+        StringBuilder sb = new StringBuilder();
+  
+        for (int i=0; i<logs.length; i++) {
+        if (logs[i] != null) {
+            sb.append("> ").append(logs[i]).append("\n");
+        }
+    }
+    return sb.toString();
+}
 }

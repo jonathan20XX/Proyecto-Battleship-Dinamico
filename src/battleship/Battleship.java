@@ -12,9 +12,9 @@ public class Battleship {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-         SwingUtilities.invokeLater(() -> {
-            PantallaJuego game = new PantallaJuego();
-            game.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            MenuPrincipal programa = new MenuPrincipal();
+            programa.setVisible(true);
         });
     }
     
