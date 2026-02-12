@@ -132,7 +132,7 @@ public class MenuPrincipal extends JFrame{
     
     private JPanel crearPanelLogin(){
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(40, 40, 40));
+        panel.setBackground(new Color(181, 176, 173));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         
@@ -168,10 +168,10 @@ public class MenuPrincipal extends JFrame{
     
     private JPanel crearPanelCrearUsuario(){
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(40, 40, 40));
+        panel.setBackground(new Color(181, 176, 173));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-
+        
         JTextField txtUser = new JTextField(15);
         JPasswordField txtPass = new JPasswordField(15);
         JButton btnRegistrar = new JButton("REGISTRAR");
@@ -307,10 +307,10 @@ public class MenuPrincipal extends JFrame{
         
         btnRanking.addActionListener(e -> {
             ArrayList<Player> lista = control.obtenerRanking();
-            StringBuilder tabla = new StringBuilder("=== CLASIFICACION DE JUGADORES");
+            StringBuilder tabla = new StringBuilder("=== CLASIFICACION DE JUGADORES ===\n");
             
             for(Player player:lista){
-                tabla.append(player.getUsuario()).append("Puntos: ").append(player.getPuntos()).append("\n");
+                tabla.append(player.getUsuario()).append(" Puntos: ").append(player.getPuntos()).append("\n");
             }
             JOptionPane.showMessageDialog(this, new JScrollPane(new JTextArea(tabla.toString())));
         });
@@ -335,7 +335,7 @@ public class MenuPrincipal extends JFrame{
 
     private JPanel crearPanelSeleccionOponente(){
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(new Color(40, 40, 60));
+        panel.setBackground(new Color(181, 176, 173));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -436,9 +436,7 @@ public class MenuPrincipal extends JFrame{
                 final int fila=i;
                 final int columna=j;
                 
-                if(enemigo){
-                    botonesTablero[i][j].addActionListener(e -> procesarDisparo(fila, columna));
-                }
+                botonesTablero[i][j].addActionListener(e -> procesarDisparo(fila, columna));
                 campo.add(botonesTablero[i][j]);
             }
         }
@@ -477,16 +475,20 @@ public class MenuPrincipal extends JFrame{
             for (int j=0; j<8; j++) {
                 if (esTurnoJ1) {
                 botonesJ1[i][j].setText(String.valueOf(m1[i][j]));
+                botonesJ1[i][j].setEnabled(false);
                 } else {
                 char c1 = m1[i][j];
                 botonesJ1[i][j].setText((c1 == 'X' || c1 == 'F') ? String.valueOf(c1) : "~");
+                botonesJ1[i][j].setEnabled(c1 != 'X' && c1 != 'F');
                 }
 
                 if (!esTurnoJ1) {
                 botonesJ2[i][j].setText(String.valueOf(m2[i][j]));
+                botonesJ2[i][j].setEnabled(false);
                 } else {
                 char c2 = m2[i][j];
                 botonesJ2[i][j].setText((c2 == 'X' || c2 == 'F') ? String.valueOf(c2) : "~");
+                botonesJ2[i][j].setEnabled(c2 != 'X' && c2 != 'F');
                 }
             
             botonesJ1[i][j].setEnabled(m1[i][j] != 'X' && m1[i][j] != 'F');
